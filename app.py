@@ -1,5 +1,13 @@
-def main():
-    pass
+from flask import Flask
 
-if __name__ == "main":
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return "hello, world!"
+
+def main():
+    app.run("localhost", 5000)
+
+if __name__ == "__main__":
     main()
