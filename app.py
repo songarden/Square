@@ -24,14 +24,13 @@ ADMIN_ID = os.getenv("ADMIN_ID")
 ADMIN_PW = os.getenv("ADMIN_PW")
 
 
-app.config.update(
-			DEBUG = True,
-			JWT_SECRET_KEY = SECRET_KEY
-		)
+
+
 
 @app.route('/')
 def index():
     return render_template('home.html')
+
 
 
 @app.route("/login", methods=['POST'])
@@ -70,15 +69,20 @@ def login_proc():
 
 @app.route('/login', methods=["GET"])
 def home2():
-	token_receive = request.cookies.get('mytoken')
-	try:
-		payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-		print(payload)
-		return render_template('login.html',max_score = payload['max_score'])
-	except jwt.ExpiredSignatureError:
-		return redirect("/")
-	except jwt.exceptions.DecodeError:
-		return redirect("/")
+    token_receive = request.cookies.get('mytoken')
+    if token_receive is None:
+        print("쿠키가 없습니다.")
+        return redirect("/")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        print(payload)
+        return render_template('login.html',max_score = payload['max_score'])
+    except jwt.ExpiredSignatureError:
+        print("쿠키가 없습니다1")
+        return redirect("/")
+    except jwt.exceptions.DecodeError:
+        print("쿠키가 없습니다2")
+        return redirect("/")
 
 def main():
     app.run("localhost", 5000)
