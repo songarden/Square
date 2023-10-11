@@ -1,6 +1,9 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect
 from pymongo import MongoClient
-import re
+from dotenv import load_dotenv
+import jwt
+import os
+from datetime import date, datetime, timedelta
 
 app = Flask(__name__)
 
@@ -41,6 +44,7 @@ list_user = [
 # 현재 db를 비우고 가데이터를 넣는다
 db.users.delete_many({})
 db.users.insert_many(list_user)
+
 
 
 # API # : main(가짜)
@@ -142,6 +146,78 @@ def signup_process():
         db.users.insert_one(user_new)
         # # 성공하면 메인 페이지로 돌아간다
         return jsonify({"success":"회원 가입이 완료되었습니다!"})
-        return redirect("/main")
+    
+    ######################################################################################################
+
+    
+
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
+
+load_dotenv(dotenv_path="../.env")
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ADMIN_ID = os.getenv("ADMIN_ID")
+ADMIN_PW = os.getenv("ADMIN_PW")
+
+
+
+
+
+@app.route('/')
+def index():
+    return render_template('home.html')
+
+@app.route("/login", methods=['POST'])
+def login_proc():
+    
+    # 클라이언트로부터 요청된 값
+    input_data = request.get_json()
+    user_id = input_data['id']
+    user_pw = input_data['pw']
+    user = db.users.find_one({'userid': user_id })
+    
+    if user_pw == user['password'] :
+        payload = {
+            'id': user['userid'],
+            'name': user['username'],
+            'max_score': user['max_score'],
+            'exp': datetime.utcnow() + timedelta(seconds=60)  # 로그인 24시간 유지
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+        return jsonify({'result': 'success', 'token': token})
+
+    # 아이디, 비밀번호가 일치하지 않는 경우
+    else:
+        return jsonify({'result': 'fail'})
+    
+# @app.route('/user_only', methods=["GET"])
+# @jwt_required()
+# def user_only():
+# 	cur_user = get_jwt_identity()
+# 	if cur_user is None:
+# 		return "User Only!"
+# 	else:
+# 		return "Hi!," + cur_user
+    
+
+@app.route('/login', methods=["GET"])
+def home2():
+    token_receive = request.cookies.get('mytoken')
+    if token_receive is None:
+        print("쿠키가 없습니다.")
+        return redirect("/")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        print(payload)
+        return render_template('login.html',max_score = payload['max_score'])
+    except jwt.ExpiredSignatureError:
+        print("쿠키가 없습니다1")
+        return redirect("/")
+    except jwt.exceptions.DecodeError:
+        print("쿠키가 없습니다2")
+        return redirect("/")
+
 
 app.run("0.0.0.0", port=5020, threaded=True, debug=True)
