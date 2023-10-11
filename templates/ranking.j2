@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>랭킹</title>
+    <style>
+        th, td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>랭킹</h1>
+    <table>
+        <tr>
+            <th>순위</th>
+            <th>이름</th>
+            <th>최고점수</th>
+            <th>날짜</th>
+        </tr>
+        {# 전체 유저의 정보를 출력한다#}
+        {% for user in list_user %}
+        <tr>
+        {# 내 정보라면 하이라이트 처리를 해야한다#}
+            <td>{{ user.rank }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.max_score }}</td>
+            <td>{{ user.max_score_date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

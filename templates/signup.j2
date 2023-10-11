@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>회원가입</title>
+    <style>
+        /* CSS 스타일을 정의합니다. */
+        .main {}
+
+        input[type="text"]::placeholder {
+            color: grey;
+        }
+
+        .error {
+            color: red;
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+{# 사용할 스크립트 #}
+<script>
+
+</script>
+
+<body>
+    <div class="main">
+        <h1>회원가입</h1>
+        <div>
+            <label for="userid">아이디</label>
+            <br>
+            <input type="text" name="userid" id="userid" required placeholder="아이디를 입력해 주세요(4자 이상)" size=30>
+            <div id="errormsg_id" , class="error"></div>
+            <br>
+
+            <label for="password">패스워드</label>
+            <br>
+            <input type="password" name="password" id="password" required placeholder="비밀번호를 입력해 주세요" size=30>
+            <div id="errormsg_pw" , class="error"></div>
+            <br>
+
+            <label for="password">패스워드 확인</label>
+            <br>
+            <input type="password" name="password_confirm" id="password_confirm" required placeholder="비밀번호를 다시 입력해 주세요"
+                size=30>
+            <div id="errormsg_pw_confirm" , class="error"></div>
+            <br>
+
+            <label for="username">이름</label>
+            <br>
+            <input type="text" name="username" id="username" required placeholder="사용할 이름을 입력해 주세요(2자 이상)" size=30>
+            <div id="errormsg_name" , class="error"></div>
+            <br>
+
+            <button onclick="submit()" style="width: 150px; height : 50px;">가입하기</button>
+        </div>
+    </div>
+
+
+</body>
+<script>
+    let useridInput = document.getElementById("userid");
+    let usernameInput = document.getElementById("username");
+    let userpasswordInput = document.getElementById("password");
+    let userpasswordconfirmInput = document.getElementById("password_confirm");
+    let errormsgId = document.querySelector("#errormsg_id");
+    let errormsgName = document.querySelector("#errormsg_name");
+    let errormsgPwconfirm = document.querySelector("#errormsg_pw_confirm")
+
+    // 서버로 데이터를 보내고 응답을 처리
+    function submit() {
+        var data = {
+            "userid": useridInput.value,
+            "username": usernameInput.value,
+            "password": userpasswordInput.value,
+            "password_confirm": userpasswordconfirmInput.value
+        };
+        fetch('/signup_process', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.useridError) {
+                    // 아이디가 이미 존재하는 경우 오류 메시지를 표시
+                    errormsgId.textContent = result.useridError;
+                } else {
+                    // 오류 메시지를 초기화
+                    errormsgId.textContent = "";
+                }
+
+                if (result.usernameError) {
+                    // 이름이 이미 존재하는 경우 오류 메시지를 표시
+                    errormsgName.textContent = result.usernameError;
+                } else {
+                    // 오류 메시지를 초기화
+                    errormsgName.textContent = "";
+                }
+                if (result.passwordconfirmError) {
+                    // 패스워드가 일치하지 않으면 에러 메세지를 표시
+                    errormsgPwconfirm.textContent = result.passwordconfirmError;
+                } else {
+                    // 오류 메시지를 초기화
+                    errormsgPwconfirm.textContent = "";
+                }
+                if (result.success){
+                    alert(result.success);
+                }
+            })
+            .catch(error => {
+                console.error('오류 발생:', error);
+                alert("서버와 통신 중 오류가 발생했습니다.");
+            });
+    }
+
+</script>
+
+</html>
