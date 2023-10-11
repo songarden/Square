@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from pymongo import MongoClient
+import re
 
 app = Flask(__name__)
 
@@ -86,25 +87,49 @@ def signup_process():
         password_confirm = data["password_confirm"]
         username = data["username"]
 
+        # 에러를 받을 딕셔너리를 만든다
+        errors = {}
+        
+        # 유저 id가 영문, 숫자가 아니면 에러 메세지를 반환한다
+        pattern = "^[A-Za-z0-9]+$"
+        if not re.match(pattern, userid):
+            errors["useridError"] = "id는 영문 및 숫자로 구성되어야 합니다"
+        
         # 유저 id가 너무 짧으면 에러 메세지를 반환한다
         if len(userid) <= 3:
-            return jsonify({"useridError": "id가 너무 짧습니다"})
+            errors["useridError"] = "id가 너무 짧습니다"
+
+        # 유저 id에 공백이 있으면 에러 메세지를 반환한다
+        if ' ' in userid:
+            errors["useridError"] = "id에는 공백이 없어야 합니다"
         
         # 유저 이름이 너무 짧으면 에러 메세지를 반환한다
-        if len(userid) <= 1:
-            return jsonify({"usernameError": "이름이 너무 짧습니다"})
+        if len(username) <= 1:
+            errors["usernameError"] = "이름이 너무 짧습니다"
+
+        # 유저 이름에 공백이 있으면 에러 메세지를 반환한다
+        if ' ' in username:
+            errors["usernameError"] = "이름에는 공백이 없어야 합니다"
         
+        # 패스워드가 너무 짧으면 에러 메세지를 반환한다
+        if len(password) <= 4:
+            errors["passwordconfirmError"] = "패스워드가 너무 짧습니다"
+
         # 패스워드가 일치하지 않으면 에러 메세지를 반환한다
         if password != password_confirm:
-            return jsonify({"passwordconfirmError": "패스워드가 일치하지 않습니다"})
+            errors["passwordconfirmError"] = "패스워드가 일치하지 않습니다"
 
         # 유저 id가 기존에 있는지 검증한다. 있으면 에러 메세지를 띄운다
         check_userid = db.users.find_one({"userid": userid})
         check_username = db.users.find_one({"username": username})
         if check_userid is not None:
-            return jsonify({"useridError": "아이디가 중복됩니다"})
+            errors["useridError"] = "이미 등록된 아이디입니다"
         if check_username is not None:
-            return jsonify({"usernameError": "이름이 중복됩니다"})
+            errors["usernameError"] = "이미 등록된 이름입니다"
+
+        # 에러가 있으면 클라이언트에 반환한다
+        if errors:
+            return jsonify(errors)
 
         # 검증을 통과하면 db에 유저 정보를 저장한다.
         user_new = {
@@ -115,7 +140,8 @@ def signup_process():
             "max_score_date": "",
         }
         db.users.insert_one(user_new)
-        # 성공하면 메인 페이지로 돌아간다
+        # # 성공하면 메인 페이지로 돌아간다
         return jsonify({"success":"회원 가입이 완료되었습니다!"})
+        return redirect("/main")
 
 app.run("0.0.0.0", port=5020, threaded=True, debug=True)
