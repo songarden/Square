@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    
+    <!-- Bootstrap 을 포함합니다. -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+    </script>
+    <script>
+        function loginClick(){
+            let id = $("#user-id").val();
+            let pw = $("#user-password").val();
+
+            $.ajax({
+              type: "POST",
+              url: "/login",
+              contentType : 'application/json; charset=utf-8',
+              data: JSON.stringify({'id':id, 'pw':pw}),
+              success: function(response){
+                  console.log(response)
+                  let access_token = response['token']
+                  console.log((access_token))
+                   if (response['result'] == 'success') {
+                        $.cookie('mytoken', response['token'], {path: '/'});
+                        window.location.replace("/login")
+                    } else {
+                        alert(response['msg'])
+                    }
+              }
+            })
+        }
+
+        function JoinClick(){
+            window.location.href = "/join"
+        }
+
+    </script>
+    <title>test</title>
+</head>
+<body>
+    <div id="login-box" class="form-post">
+        <div class="form-group">
+            <label for="login-id">ID</label>
+            <input id="user-id" class="form-control" placeholder="ID">
+        </div>
+        <div class="form-group">
+            <label for="login-password">PASSWORD</label>
+            <input id="user-password" class="form-control" placeholder="PASSWORD"></input>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="loginClick()">로그인</button>
+        <button type="button" class="btn btn-primary" onclick="JoinClick()">회원가입</button>
+        
+        
+    </div>
+</body>
+</html>
