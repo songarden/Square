@@ -203,12 +203,12 @@ def home2():
     print(request.current_user)
     return render_template('login.html',max_score = request.current_user.get('max_score',0))
 
-@app.route('/game')
-def game():
+@app.route('/game/<string:user_id>')
+def game(user_id):
     return render_template('game.html')
 
-@app.route("/send_result", methods=['POST'])
-def send_result():
+@app.route("/send_result/<string:user_id>", methods=['POST'])
+def send_result(user_id):
     data = request.get_json()
     scores = data['scores']
     sum = 0
@@ -220,7 +220,11 @@ def send_result():
     for score in scores:
         sum += score
     
-    print(sum)
+    if sum > 300:
+        return jsonify({"result": "fail"}), 500
+    
+    db.users.update_one({"userid": user_id}, {"$set": {"prev_score": sum}})
+    user = db.users.find_one({"userid": user_id})
     return jsonify({"result": "success"}), 200
 
 

@@ -179,13 +179,13 @@ class Game {
 
             this.gameContext.gameEnd(this.calc, this.rule, this.startX, this.startY, this.endX, this.endY);
             if (this.gameContext._scores.length === this.maxGame) {
-                // TODO: 랭킹 화면으로 리다이렉트
                 this.gameContext.gameStop();
                 const sendResult = async () => {
-                    let result = await sendResultData("/send_result", this.gameContext._scores);
+                    const currentUser = window.location.href.split("/").filter(e => e).slice(-1);                 
+                    let result = await sendResultData(`/send_result/${currentUser}`, this.gameContext._scores);
                     if (result) {
                         console.log("서버에 점수를 보냈습니다.");
-                        window.location.href = "/ranking";
+                        window.location.href = `/ranking/${currentUser}`;
                     } else {
                         alert("결과를 서버에 전송하는데 실패하였습니다.");
                         window.location.href = "/";
