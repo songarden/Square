@@ -19,15 +19,16 @@
     <link rel="stylesheet" href="{{url_for('static', filename='home.css')}}">
     <style>
         
-        .myButton{
+        .myButton {
             padding: 12px 20px;
             font-size: 18px;
         }
 
-        #post-box{
+        #post-box {
             margin-top:10%;
         }
-        #header{
+
+        #header {
             margin-top:10px;
         }
 
@@ -49,10 +50,10 @@
             font-size: 16px;
         }
 
-        
         footer{
-            font-size: 3px;
+            font-size: 1rem;
         }
+
         #input-form{
             text-emphasis-color : aqua;
             text-decoration-color: purple;
@@ -95,6 +96,7 @@
 </head>
 <body>
     {% include 'logo.html' %}
+    {% include 'logout.html' %}
     <div id="post-box" class="input-container">
         <div id="input-form">
             <div class="form-group">

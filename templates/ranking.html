@@ -16,50 +16,106 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
     <style>
-        th, td {
+        th,
+        td {
             text-align: center;
         }
 
-        #ranking-box{
-            margin: auto;
-            margin-top:100px;
-            width: 500px;
+        #ranking-box {
+            margin: 0 auto;
+            margin-top: 50px;
+            width: 650px;
             background-color: #EEEFF1;
             border-radius: 5px;
             text-align: center;
-            padding: 20px;
-            color:black;
+            color: black;
         }
 
-        #th-rank, #td-rank{
-            width:10%
+        #th-my,
+        #th-rank,
+        #td-rank {
+            width: 10%
         }
 
-        #th-name, #td-name{
-            width:50%
+        #th-name,
+        #td-name {
+            width: 30%
         }
 
-        #th-score, #td-score{
-            width:30%
+        #th-score,
+        #td-score {
+            width: 25%
         }
 
-        #th-date, #td-date{
-            width:30%
+        #th-date,
+        #td-date {
+            width: 30%
         }
 
-        .rank-table{
-            margin-bottom:10%
+        .rank-table {
+            margin-bottom: 10%
         }
 
+        #my_modal {
+            width: 300px;
+            height: auto;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #c79393;
+            opacity: 0.9;
+            position: absolute;
+            top: 23%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .modal_content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: black;
+        }
+
+        #score_box {
+            background-color: white;
+            color: black;
+            width: 300px;
+            height: auto;
+            padding: 5px 5px;
+            margin: 50px auto;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .my_button {
+            width: 150px;
+            height: 50px;
+            font-size: 15px;
+            background-color: rgb(54, 53, 53);
+            color: white;
+            border-radius: 5px;
+            margin-bottom: 5%;
+        }
+
+        .my_button:hover {
+            background-color: grey;
+        }
+
+        .close_modal {
+            display: contents;
+        }
     </style>
 </head>
 <body>
     {% include 'logo.html' %}
     {% include 'logout.html' %}
     <div id="ranking-box">
-        <h1 style="margin-bottom:10%;">Ranking</h1>
+        <h1 style=>Ranking</h1>
+        <div style="color:black; margin-bottom:10%;">랭킹은 상위 10명까지 제공됩니다</div>
         <table class="rank-table">
             <tr>
+                <th id="th-my"></th>
                 <th id="th-rank">순위</th>
                 <th id="th-name">이름</th>
                 <th id="th-score">최고점수</th>
@@ -68,15 +124,24 @@
             {# 전체 유저의 정보를 출력한다#}
             {% for user in list_user %}
             <tr>
-            {# 내 정보라면 하이라이트 처리를 해야한다#}
+                {# 내 정보라면 따로 처리를 해야한다#}
+                {% if user.rank == 1 %}
+                <td id="td-icon"><i class="fa fa-trophy" aria-hidden="true" style="color:gold"></i></td>
+                {% elif user.rank == 2%}
+                <td id="td-icon"><i class="fa fa-trophy" aria-hidden="true" style="color:silver"></i></td>
+                {% elif user.rank == 3%}
+                <td id="td-icon"><i class="fa fa-trophy" aria-hidden="true" style="color:brown"></i></td>
+                {% else %}
+                <td id="td-icon"></td>
+                {% endif %}
                 <td id="td-rank">{{ user.rank }}</td>
-                <td id="td-name">{{ user.username }}</td>
+                <td id="td-name" style="{% if user.userid == user_id %}color: red;{% endif %}">{{ user.username }}</td>
                 <td id="td-score">{{ user.max_score }}</td>
                 <td id="td-date">{{ user.max_score_date }}</td>
             </tr>
             {% endfor %}
         </table>
-        <a href="/"><button class="myButton">돌아가기</button></a>
+        <a href="/"><button class="my_button">돌아가기</button></a>
     </div>
     
 </body>

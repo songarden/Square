@@ -45,8 +45,8 @@ def show_rankings():
     list_user = list(db.users.find({"max_score": {"$ne": 0}}))
 
     # db의 유저를 max_score 내림차순으로 정렬한다
-    list_user.sort(key=lambda field: field["max_score"], reverse=True)
-
+    list_user.sort(key=lambda field: (-field["max_score"], field["max_score_date"], field["username"]))
+    list_user = list_user[:10]
     # 순위를 계산하여 각 유저 데이터에 추가
     rank = 1
     for user in list_user:
@@ -54,7 +54,7 @@ def show_rankings():
         rank += 1
 
     # 정렬된 유저 데이터를 적절히 가공해서 출력한다
-    return render_template("ranking.html", list_user=list_user)
+    return render_template("ranking.html", list_user=list_user, is_ranking_page=True)
 
 @app.route("/ranking/<string:user_id>")
 @requires_jwt
@@ -85,7 +85,6 @@ def show_my_ranking(user_id):
 
     # db의 유저를 max_score 내림차순으로 정렬하고, 상위 10명만 남긴다
     # max_score가 같을 경우 max_score_date 오름차순, 그래도 같으면 유저이름 순으로 정렬한다. 유저 이름은 중복되지 않기 때문에 여기까지만 하면 될거같음.
-    list_user.sort(key=lambda field: (-field["max_score"], field["max_score_date"], field["username"]))
     list_user = list_user[:10]
 
     # 순위를 계산하여 각 유저 데이터에 추가
@@ -95,7 +94,15 @@ def show_my_ranking(user_id):
         rank += 1
 
     # 정렬된 유저 데이터를 적절히 가공해서 출력한다
-    return render_template("myranking.html", list_user=list_user, user_id=user_id, new_record=new_record, max_score=max_score_user, prev_score=prev_score_user, current_user_name=request.current_user.get('name'))
+    return render_template("myranking.html",
+                            list_user=list_user,
+                            user_id=user_id, 
+                            new_record=new_record, 
+                            max_score=max_score_user, 
+                            prev_score=prev_score_user, 
+                            current_user_name=request.current_user.get('name'),
+                            is_ranking_page=True
+                          )
 
 @app.route("/signup")
 def show_signup():
