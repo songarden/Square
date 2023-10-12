@@ -75,7 +75,8 @@ def show_my_ranking(user_id):
         # max score를 prev_score_user로 갱신한다
         db.users.update_one({"userid":user_id},{"$set": {"max_score": prev_score_user}})
         # max score date를 갱신한다
-        current_time = datetime.now()
+        # utc시간을 받고 kst로 변경한다(+9h)
+        current_time = datetime.utcnow() + timedelta(hours=9)
         formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
         db.users.update_one({"userid":user_id},{"$set": {"max_score_date": formatted_time}})
 
@@ -287,6 +288,8 @@ def process_achievement(user_id):
     if len(scores) == 3 and sum >= 150:
         if check_and_achieve("6", user_id):
             return make_achievement_response("반타작", "총점 150점 이상 달성하기"), 200
+        
+
         
     return jsonify({"error": "달성할 업적이 없습니다."}), 400
     
