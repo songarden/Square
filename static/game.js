@@ -182,7 +182,7 @@ class Game {
                 // TODO: 랭킹 화면으로 리다이렉트
                 this.gameContext.gameStop();
                 const sendResult = async () => {
-                    let result = await sendResultData("/sendResult", this.gameContext._scores);
+                    let result = await sendResultData("/send_result", this.gameContext._scores);
                     if (result) {
                         console.log("서버에 점수를 보냈습니다.");
                         window.location.href = "/ranking";
