@@ -289,6 +289,35 @@ def process_achievement(user_id):
         if check_and_achieve("6", user_id):
             return make_achievement_response("반타작", "총점 150점 이상 달성하기"), 200
         
+    # 점수 0.1점 미만
+    if min(scores) < 0.1:
+        if check_and_achieve("7", user_id):
+            return make_achievement_response("반항아", "0.1점 미만 달성하기"), 200
+        
+    # 신호등
+    condition_green = False
+    condition_orange = False
+    condition_red = False
+
+    for score in scores:
+        if score > 90:
+            condition_green = True
+        elif 70 < score <= 90:
+            condition_orange = True
+        elif score <= 70:
+            condition_red = True
+
+    if (condition_green and condition_orange and condition_red) :
+        if check_and_achieve("8", user_id):
+            return make_achievement_response("신호등", "세가지 색상의 스코어 달성"), 200
+        
+    # 3개의 점수가 1점 이내
+    score_max = max(scores)
+    score_min = min(scores)
+
+    if (score_max-score_min < 1) and len(scores) == 3:
+        if check_and_achieve("9", user_id):
+            return make_achievement_response("균형의 수호자", "3개의 점수의 편차가 1점 이내"), 200
 
         
     return jsonify({"error": "달성할 업적이 없습니다."}), 400
