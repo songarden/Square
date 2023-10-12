@@ -34,6 +34,9 @@ class GameContext {
         this.state = GameState.PLAY;
         let intervalId = setInterval(() => {
             if (this._remainingTime - 10 > 0) {
+                if (this.state === GameState.ALERT || this.state === GameState.PAUSE) {
+                    return;
+                }
                 this._remainingTime -= 10;
             } else {
                 clearInterval(intervalId);
@@ -410,7 +413,7 @@ function drawProgress(game) {
             drawCircleWithText(x, height, radius, `${scores[i].toFixed(2)}`, "green", "white");
         } else if (scores[i] > 70) {
             drawCircleWithText(x, height, radius, `${scores[i].toFixed(2)}`, "orange", "white");
-        } else if (scores[i] > 0) {
+        } else if (scores[i] >= 0) {
             drawCircleWithText(x, height, radius, `${scores[i].toFixed(2)}`, "red", "white");
         } else {
             drawCircle(x, height, radius, "gray");
