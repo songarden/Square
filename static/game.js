@@ -400,7 +400,7 @@ export function start() {
         let lengthX = Math.abs(x2 - x1);
         let lengthY = Math.abs(y2 - y1);
         let score = Math.min(lengthX / lengthY, lengthY / lengthX) * 100;
-
+        score = parseFloat(score.toFixed(2));
         return score;
     }
 
