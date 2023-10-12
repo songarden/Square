@@ -1,4 +1,6 @@
 // @ts-check
+import StartToastifyInstance from "./toastify-es.js";
+
 const GameState = {
     INIT: "init",
     PLAY: "play",
@@ -178,11 +180,20 @@ class Game {
             }
 
             this.gameContext.gameEnd(this.calc, this.rule, this.startX, this.startY, this.endX, this.endY);
-            if (this.gameContext._scores.length === this.maxGame) {
+            // request achievement
+            const currentUser = window.location.href.split("/").filter(e => e).slice(-1);
+            let scores = this.gameContext.scores;
+            sendAchievement(`/arch/${currentUser}`, scores).then((response) => {
+                if (!response['title'] || !response['body']) {
+                    return;
+                }
+                notify(response['title'], response['body']);
+            });
+
+            if (scores.length === this.maxGame) {
                 this.gameContext.gameStop();
                 const sendResult = async () => {
-                    const currentUser = window.location.href.split("/").filter(e => e).slice(-1);                 
-                    let result = await sendResultData(`/send_result/${currentUser}`, this.gameContext._scores);
+                    let result = await sendResultData(`/send_result/${currentUser}`, scores);
                     if (result) {
                         console.log("서버에 점수를 보냈습니다.");
                         window.location.href = `/ranking/${currentUser}`;
@@ -378,7 +389,7 @@ function drawProgress(game) {
     }
 }
 
-function start() {
+export function start() {
     let canvas = document.getElementById("canvas");
     const rule = function (x1, y1, x2, y2) {
         let dist = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
@@ -431,6 +442,35 @@ async function sendResultData(url, scores) {
     });
 
     return result.ok;
+}
+
+async function sendAchievement(url, scores) {
+    let requestData = JSON.stringify({ scores: scores });
+    let result = await fetch(url, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json, text/plain',
+            'Content-Type': 'application/json;charset=UTF-8'
+        },
+        body: requestData
+    });
+
+    return await result.json();
+}
+
+const notify = (title, body) => {
+    StartToastifyInstance({
+        text: `업적 달성\n${title}\n ${body}`,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background: "linear-gradient(to right, #00b09b, #96c93d)",
+        },
+      }).showToast();
 }
 
 start();

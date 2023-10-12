@@ -290,6 +290,24 @@ def send_result(user_id):
     user = db.users.find_one({"userid": user_id})
     return jsonify({"result": "success"}), 200
 
+@app.route("/arch/<string:user_id>", methods=['POST'])
+@requires_jwt
+def process_achievement(user_id):
+    data = request.get_json()
+    scores = data['scores']
 
+    # 업적 로직 하드코딩
+    # 점수 100점
+    if max(scores) > 100:
+        return make_achievement_response("100점!", "100점 달성하기"), 200
+
+    #점수 50점 미만
+    if min(scores) < 50:
+        return make_achievement_response("50점?", "50점 미만 달성하기"), 200
+    
+    return jsonify({"error": "달성할 업적이 없습니다."}), 400
+    
+def make_achievement_response(title, body):
+    return jsonify({"title": title, "body": body})
 
 app.run("0.0.0.0", port=5020, threaded=True, debug=True)
