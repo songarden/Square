@@ -295,18 +295,40 @@ def send_result(user_id):
 def process_achievement(user_id):
     data = request.get_json()
     scores = data['scores']
+    sum = 0
+    for i in scores:
+        sum += i
     
     # 업적 로직 하드코딩
+    # 점수 77.77점
+    if 77.77 in scores:
+        if check_and_achieve("1", user_id):
+            return make_achievement_response("777", "77.77점 달성하기"), 200
+        
     # 점수 100점
     if max(scores) >= 100:
         if check_and_achieve("2", user_id):
             return make_achievement_response("100점!", "100점 달성하기"), 200
 
-    #점수 50점 미만
+    # 점수 50점 미만
     if min(scores) < 50:
-        if check_and_achieve("2", user_id):
+        if check_and_achieve("3", user_id):
             return make_achievement_response("일부로 그러신거죠?", "50점 미만 달성하기"), 200
     
+    # 총점 300점
+    if sum == 300:
+        if check_and_achieve("4", user_id):
+            return make_achievement_response("완벽 그 자체", "총점 300점 달성하기"), 200
+
+    # 총점 285점 이상    
+    if sum >= 285:
+        if check_and_achieve("5", user_id):
+            return make_achievement_response("출발이 좋은데요?", "총점 285점 이상 달성하기"), 200
+    
+    if len(scores) == 3 and sum >= 150:
+        if check_and_achieve("6", user_id):
+            return make_achievement_response("반타작", "총점 150점 이상 달성하기"), 200
+        
     return jsonify({"error": "달성할 업적이 없습니다."}), 400
     
 def make_achievement_response(title, body):
