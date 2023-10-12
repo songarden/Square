@@ -12,7 +12,14 @@
             #logout-div{
                 width: 100%;
                 display: flex;
+                flex-direction: row;
                 justify-content: center;
+            }
+
+            #user_info{
+                margin-top: 25px;
+                font-weight: 500;
+                margin-right: 10px;
             }
             
             .myButton{
@@ -35,6 +42,7 @@
     </head>
     <body>
         <div id="logout-div">
+            <div id="user_info">{{current_user_id}}님 반갑습니다.</div>
             <button type="button" class="myButton" onclick="logoutBtn()">로그아웃</button>
         </div>
     </body>

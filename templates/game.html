@@ -4,17 +4,15 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login</title>
+        <title>Game</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
         <style>
             .game-body{
                 height:130%;
             }
-            
-            
         </style>
         <link rel="stylesheet" href="{{url_for('static', filename='home.css')}}">
-        
+        <link rel="stylesheet" href="{{url_for('static', filename='toastify.css')}}">
     </head>
     <body class="game-body">
         {% include 'logo.html' %}
@@ -26,7 +24,7 @@
                 </div>
             </div>
         </div>
-        <script src="{{url_for('static', filename='game.js')}}"></script>
+        <script type="module" src="{{url_for('static', filename='game.js')}}"></script>
     </body>
     
 </html>

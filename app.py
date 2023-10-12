@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import Flask, render_template, request, jsonify, redirect
+from flask import Flask, flash, render_template, request, jsonify, redirect
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import jwt
@@ -17,7 +17,6 @@ load_dotenv(dotenv_path="../.env")
 SECRET_KEY = os.getenv("SECRET_KEY")
 ADMIN_ID = os.getenv("ADMIN_ID")
 ADMIN_PW = os.getenv("ADMIN_PW")
-
 
 
 #token 확인 데코레이터 선언 함수입니다.
@@ -65,6 +64,7 @@ def show_rankings():
 
  # API # : 게임 끝난 후 나의 랭킹 보여주기
 @app.route("/ranking/<string:user_id>")
+@requires_jwt
 def show_my_ranking(user_id):
     # 이전 점수와 비교하여 신기록을 달성한 경우 max_score를 갱신한다
     prev_score_cursor = db.users.find({"userid":user_id}, { "prev_score": 1})
@@ -101,7 +101,7 @@ def show_my_ranking(user_id):
         rank += 1
 
     # 정렬된 유저 데이터를 적절히 가공해서 출력한다
-    return render_template("myranking.j2", list_user=list_user, user_id=user_id, new_record=new_record, max_score=max_score_user, prev_score=prev_score_user)
+    return render_template("myranking.j2", list_user=list_user, user_id=user_id, new_record=new_record, max_score=max_score_user, prev_score=prev_score_user, current_user_id=request.current_user.get('id'))
 
 # API # : 회원 가입 페이지 보여주기
 @app.route("/signup")
@@ -206,13 +206,15 @@ def login_proc():
     user_id = input_data['id']
     user_pw = input_data['pw']
     user = db.users.find_one({'userid': user_id })
+    if user is None :
+        return jsonify({'result':'fail'})
     
     if user_pw == user['password'] :
         payload = {
             'id': user['userid'],
             'name': user['username'],
             'max_score': user['max_score'],
-            'exp': datetime.utcnow() + timedelta(seconds=60)  # 로그인 24시간 유지
+            'exp': datetime.utcnow() + timedelta(seconds=600)  # 로그인 24시간 유지
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
@@ -231,7 +233,7 @@ def home2():
 @app.route('/game/<string:user_id>')
 @requires_jwt
 def game(user_id):
-    return render_template('game.html')
+    return render_template('game.html',current_user_id = request.current_user.get('id'))
 
 @app.route("/send_result/<string:user_id>", methods=['POST'])
 @requires_jwt
@@ -254,6 +256,54 @@ def send_result(user_id):
     user = db.users.find_one({"userid": user_id})
     return jsonify({"result": "success"}), 200
 
+@app.route("/arch/<string:user_id>", methods=['POST'])
+@requires_jwt
+def process_achievement(user_id):
+    data = request.get_json()
+    scores = data['scores']
+    sum = 0
+    for i in scores:
+        sum += i
+    
+    # 업적 로직 하드코딩
+    # 점수 77.77점
+    if 77.77 in scores:
+        if check_and_achieve("1", user_id):
+            return make_achievement_response("777", "77.77점 달성하기"), 200
+        
+    # 점수 100점
+    if max(scores) >= 100:
+        if check_and_achieve("2", user_id):
+            return make_achievement_response("100점!", "100점 달성하기"), 200
 
+    # 점수 50점 미만
+    if min(scores) < 50:
+        if check_and_achieve("3", user_id):
+            return make_achievement_response("일부로 그러신거죠?", "50점 미만 달성하기"), 200
+    
+    # 총점 300점
+    if sum == 300:
+        if check_and_achieve("4", user_id):
+            return make_achievement_response("완벽 그 자체", "총점 300점 달성하기"), 200
+
+    # 총점 285점 이상    
+    if sum >= 285:
+        if check_and_achieve("5", user_id):
+            return make_achievement_response("출발이 좋은데요?", "총점 285점 이상 달성하기"), 200
+    
+    if len(scores) == 3 and sum >= 150:
+        if check_and_achieve("6", user_id):
+            return make_achievement_response("반타작", "총점 150점 이상 달성하기"), 200
+        
+    return jsonify({"error": "달성할 업적이 없습니다."}), 400
+    
+def make_achievement_response(title, body):
+    return jsonify({"title": title, "body": body})
+
+def check_and_achieve(achievement_id, user_id):
+    if db.achievement.find_one({"achievementid": achievement_id, "userid": user_id}) == None:
+        db.achievement.insert_one({"achievementid": achievement_id, "userid": user_id, "date": datetime.now()})
+        return True
+    return False
 
 app.run("0.0.0.0", port=5020, threaded=True, debug=True)
