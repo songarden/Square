@@ -5,13 +5,20 @@ import jwt
 import os
 from datetime import date, datetime, timedelta
 import re
+
 app = Flask(__name__)
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
 
 client = MongoClient("mongodb://test:test@54.180.100.137", 27017)
 db = client.square
+load_dotenv(dotenv_path="../.env")
+SECRET_KEY = os.getenv("SECRET_KEY")
+ADMIN_ID = os.getenv("ADMIN_ID")
+ADMIN_PW = os.getenv("ADMIN_PW")
 
 # db에 넣을 가데이터 나중에 제거해줘야함
-list_user = [
+user_list = [
     {
         "userid": "123",
         "username": "john_doe",
@@ -43,15 +50,7 @@ list_user = [
 ]
 # 현재 db를 비우고 가데이터를 넣는다
 db.users.delete_many({})
-db.users.insert_many(list_user)
-
-
-
-# API # : main(가짜)
-@app.route("/main")
-def main():
-    return render_template("main.j2", message="hello")
-
+db.users.insert_many(user_list)
 
 # API # : 랭킹 보여주기
 @app.route("/ranking")
@@ -146,19 +145,6 @@ def signup_process():
         db.users.insert_one(user_new)
         # # 성공하면 메인 페이지로 돌아간다
         return jsonify({"success":"회원 가입이 완료되었습니다!"})
-    
-    ######################################################################################################
-
-    
-
-app.jinja_env.trim_blocks = True
-app.jinja_env.lstrip_blocks = True
-
-load_dotenv(dotenv_path="../.env")
-
-SECRET_KEY = os.getenv("SECRET_KEY")
-ADMIN_ID = os.getenv("ADMIN_ID")
-ADMIN_PW = os.getenv("ADMIN_PW")
 
 @app.route('/')
 def index():
@@ -188,16 +174,6 @@ def login_proc():
     else:
         return jsonify({'result': 'fail'})
     
-# @app.route('/user_only', methods=["GET"])
-# @jwt_required()
-# def user_only():
-# 	cur_user = get_jwt_identity()
-# 	if cur_user is None:
-# 		return "User Only!"
-# 	else:
-# 		return "Hi!," + cur_user
-    
-
 @app.route('/login', methods=["GET"])
 def home2():
     token_receive = request.cookies.get('mytoken')
@@ -219,8 +195,8 @@ def home2():
 def game():
     return render_template('game.html')
 
-@app.route("/sendResult", methods=['POST'])
-def sendResult():
+@app.route("/send_result", methods=['POST'])
+def send_result():
     data = request.get_json()
     scores = data['scores']
     sum = 0
