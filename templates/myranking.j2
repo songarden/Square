@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>랭킹</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+
+    <!-- 글꼴 링크 -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&family=Roboto:wght@100;400&display=swap"
+        rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+    {# 아이콘 삽입을 위한 폰트 어썸 #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+    <style>
+        th,
+        td {
+            text-align: center;
+        }
+
+        #ranking-box {
+            margin : auto;
+            margin-top: 50px;
+            width: 700px;
+            background-color: #EEEFF1;
+            border-radius: 5px;
+            text-align: center;
+            padding: auto;
+            color: black;
+        }
+
+        #th-my,
+        #th-rank,
+        #td-rank {
+            width: 10%
+        }
+
+        #th-name,
+        #td-name {
+            width: 40%
+        }
+
+        #th-score,
+        #td-score {
+            width: 10%
+        }
+
+        #th-date,
+        #td-date {
+            width: 70%
+        }
+
+        .rank-table {
+            margin-bottom: 10%
+        }
+
+        #my_modal {
+            width: 300px;
+            height: auto;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #fff;
+            opacity: 0.9;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .modal_content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: black;
+            background-color: white;
+        }
+        #score_box{
+            background-color : white;
+            color : black;
+            width : 300px;
+            height : auto;
+            padding : 5px 5px;
+            margin : 50px auto;
+            border-radius : 10px;
+            text-align : center;
+        }
+    </style>
+    <script>
+        function openModal() {
+            var modal = document.getElementById("my_modal");
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            var modal = document.getElementById("my_modal");
+            modal.style.display = "none";
+        }
+
+        function return_to_game() {
+            window.location.replace('/');
+        }
+
+    </script>
+</head>
+
+<body>
+    {% include 'logo.html' %}
+    {# new_record 여부에 따라 모달을 띄운다 #}
+    {% if new_record %}
+    <div id="my_modal" class="modal" style="display: block;">
+        <div class="modal_content">
+            <p>새로운 최고 점수 달성!</p>
+            <br>
+            <span class="close" onclick="closeModal()">확인</span>
+        </div>
+    </div>
+    {% endif %}
+    <div id = "score_box">
+        나의 이번 점수 : {{prev_score}}
+        <br>
+        나의 최고 점수 : {{max_score}}
+    </div>
+    <div id="ranking-box">
+        <h1>Ranking</h1>
+        <div style="color:black; margin-bottom:10%;">랭킹은 최대 10명까지 제공됩니다</div>
+        <table class="rank-table">
+            <tr>
+                <th id="th-my"></th>
+                <th id="th-rank">순위</th>
+                <th id="th-name">이름</th>
+                <th id="th-score">최고점수</th>
+                <th id="th-date">날짜</th>
+            </tr>
+            {# 전체 유저의 정보를 출력한다#}
+            {% for user in list_user %}
+            <tr>
+                {# 내 정보라면 따로 처리를 해야한다#}
+                {% if user.rank == 1 %}
+                <td id="td-icon"><i class="fa fa-trophy" aria-hidden="true" style="color:gold"></i></td>
+                {% elif user.rank == 2%}
+                <td id="td-icon"><i class="fa fa-trophy" aria-hidden="true" style="color:silver"></i></td>
+                {% elif user.rank == 3%}
+                <td id="td-icon"><i class="fa fa-trophy" aria-hidden="true" style="color:brown"></i></td>
+                {% else %}
+                <td id="td-icon"></td>
+                {% endif %}
+                <td id="td-rank">{{ user.rank }}</td>
+                <td id="td-name" style="{% if user.userid == user_id %}color: red;{% endif %}">{{ user.username }}</td>
+                <td id="td-score">{{ user.max_score }}</td>
+                <td id="td-date">{{ user.max_score_date }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <a href="/"><button class="myButton">다시하기</button></a>
+    </div>
+
+</body>
+
+</html>
