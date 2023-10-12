@@ -28,7 +28,7 @@
             font-family: 'Roboto', sans-serif;
         }
 
-        
+
 
         body {
             /* 선형 그라데이션을 적용하여 배경 만들기 */
@@ -70,6 +70,7 @@
             background-color: rgb(54, 53, 53);
             color: white;
         }
+
         .my_button:hover {
             background-color: grey;
         }
@@ -96,15 +97,15 @@
 
 <body>
     <div class="main">
-        <div id="header">
-            <h1 id="logo" style="margin-bottom:5%;">Square</h1>
+        <div id="header" style="margin-bottom:5%;">
+            {% include 'logo.html' %}
         </div>
         <div id="contents">
             <h3 style="color:black;">회원가입</h3>
             <div class="contents_sub">
                 <label for="userid" class="text_guide">아이디</label>
                 <br>
-                <input type="text" name="userid" id="userid" required placeholder="아이디를 입력해주세요(영문 및 숫자, 4자이상)"
+                <input type="text" name="userid" id="userid" required placeholder="아이디를 입력해주세요(영문 및 숫자, 4~20자)"
                     class="input_box">
                 <div id="errormsg_id" , class="error">-</div>
             </div>
@@ -112,31 +113,30 @@
             <div class="contents_sub">
                 <label for="password" class="text_guide">패스워드</label>
                 <br>
-                <input type="password" name="password" id="password" required placeholder="비밀번호를 입력해 주세요"
+                <input type="password" name="password" id="password" required placeholder="비밀번호를 입력해 주세요(4자 이상)"
                     class="input_box">
                 <div id="errormsg_pw" , class="error">-</div>
             </div>
 
             <div class="contents_sub">
-            <label for="password" class="text_guide">패스워드 확인</label>
-            <br>
-            <input type="password" name="password_confirm" id="password_confirm" required placeholder="비밀번호를 다시 입력해 주세요"
-                class="input_box">
-            <div id="errormsg_pw_confirm" , class="error">-</div>
+                <label for="password" class="text_guide">패스워드 확인</label>
+                <br>
+                <input type="password" name="password_confirm" id="password_confirm" required
+                    placeholder="비밀번호를 다시 입력해 주세요" class="input_box">
+                <div id="errormsg_pw_confirm" , class="error">-</div>
             </div>
 
             <div class="contents_sub">
-            <label for="username" class="text_guide">이름</label>
-            <br>
-            <input type="text" name="username" id="username" required placeholder="사용할 이름을 입력해 주세요(2자 이상)"
-                class="input_box">
-            <div id="errormsg_name" , class="error">-</div>
-            <br>
+                <label for="username" class="text_guide">이름</label>
+                <br>
+                <input type="text" name="username" id="username" required placeholder="사용할 이름을 입력해 주세요(2~10자)"
+                    class="input_box">
+                <div id="errormsg_name" , class="error">-</div>
+                <br>
             </div>
 
             <div class="contents_sub">
-            <button onclick="submit()" class="my_button">가입하기</button>
-            <a href="/"><button class="my_button">돌아가기</button></a>
+                <button onclick="submit()" class="my_button">가입하기</button>
             </div>
         </div>
     </div>

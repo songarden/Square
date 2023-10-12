@@ -80,7 +80,7 @@
                         $.cookie('mytoken', response['token'], {path: '/'});
                         window.location.replace(`/game/${id}`);
                     } else {
-                        alert("등록되지 않은 회원입니다.")
+                        alert("아이디와 패스워드가 일치하지 않습니다!");
                     }
               }
             })

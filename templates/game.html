@@ -5,12 +5,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Game</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-        <style>
-            .game-body{
-                height:130%;
-            }
-        </style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+        crossorigin="anonymous">
         <link rel="stylesheet" href="{{url_for('static', filename='home.css')}}">
         <link rel="stylesheet" href="{{url_for('static', filename='toastify.css')}}">
     </head>
@@ -20,7 +17,7 @@
         <div class="hero is-fullheight" style="min-height: 0;">
             <div class="hero-body is-justify-content-center is-align-items-center" style="padding: 2rem 3rem;">
                 <div class="columns is-flex is-flex-direction-column box">
-                    <canvas id="canvas" width="1000px" height="500px"></canvas>
+                    <canvas id="canvas" width="1000px" height="500px" style="background-color: white;"></canvas>
                 </div>
             </div>
         </div>

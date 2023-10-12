@@ -121,4 +121,5 @@ if __name__ == '__main__':
     ]
     # 현재 db를 비우고 가데이터를 넣는다
     db.users.delete_many({})
+    db.achievement.delete_many({})
     # db.users.insert_many(user_list)

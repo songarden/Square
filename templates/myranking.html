@@ -106,6 +106,10 @@
         .my_button:hover {
             background-color: grey;
         }
+
+        .close_modal {
+            display: contents;
+        }
     </style>
     <script>
         function openModal() {
@@ -135,7 +139,7 @@
             <br>
             <div>기존 최고 점수를 갱신했습니다!</div>
             <br>
-            <span class="close" onclick="closeModal()">확인</span>
+            <span class="close_modal" onclick="closeModal()">확인</span>
         </div>
     </div>
     {% endif %}
