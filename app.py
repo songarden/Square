@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import Flask, render_template, request, jsonify, redirect
+from flask import Flask, flash, render_template, request, jsonify, redirect
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import jwt
@@ -53,10 +53,8 @@ user_list = [
         "max_score_date": "2023-10-12 16:18:42",
     },
 ]
-# 현재 db를 비우고 가데이터를 넣는다
-db.users.delete_many({})
-db.users.insert_many(user_list)
-db.achievement.delete_many({})
+
+
 #token 확인 데코레이터 선언 함수입니다.
 def requires_jwt(func):
     @wraps(func)
@@ -102,6 +100,7 @@ def show_rankings():
 
  # API # : 게임 끝난 후 나의 랭킹 보여주기
 @app.route("/ranking/<string:user_id>")
+@requires_jwt
 def show_my_ranking(user_id):
     # 이전 점수와 비교하여 신기록을 달성한 경우 max_score를 갱신한다
     prev_score_cursor = db.users.find({"userid":user_id}, { "prev_score": 1})
@@ -137,7 +136,7 @@ def show_my_ranking(user_id):
         rank += 1
 
     # 정렬된 유저 데이터를 적절히 가공해서 출력한다
-    return render_template("myranking.j2", list_user=list_user, user_id=user_id, new_record=new_record, max_score=max_score_user, prev_score=prev_score_user)
+    return render_template("myranking.j2", list_user=list_user, user_id=user_id, new_record=new_record, max_score=max_score_user, prev_score=prev_score_user, current_user_id=request.current_user.get('id'))
 
 # API # : 회원 가입 페이지 보여주기
 @app.route("/signup")
@@ -242,13 +241,15 @@ def login_proc():
     user_id = input_data['id']
     user_pw = input_data['pw']
     user = db.users.find_one({'userid': user_id })
+    if user is None :
+        return jsonify({'result':'fail'})
     
     if user_pw == user['password'] :
         payload = {
             'id': user['userid'],
             'name': user['username'],
             'max_score': user['max_score'],
-            'exp': datetime.utcnow() + timedelta(seconds=60)  # 로그인 24시간 유지
+            'exp': datetime.utcnow() + timedelta(seconds=600)  # 로그인 24시간 유지
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
@@ -267,7 +268,7 @@ def home2():
 @app.route('/game/<string:user_id>')
 @requires_jwt
 def game(user_id):
-    return render_template('game.html')
+    return render_template('game.html',current_user_id = request.current_user.get('id'))
 
 @app.route("/send_result/<string:user_id>", methods=['POST'])
 @requires_jwt

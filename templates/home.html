@@ -61,6 +61,7 @@
     <link rel="stylesheet" href="{{url_for('static', filename='home.css')}}">
     </script>
     <script>
+
         function loginClick(){
             let id = $("#login-id").val();
             let pw = $("#login-password").val();
@@ -78,7 +79,7 @@
                         $.cookie('mytoken', response['token'], {path: '/'});
                         window.location.replace(`/game/${id}`);
                     } else {
-                        alert(response['msg'])
+                        alert("등록되지 않은 회원입니다.")
                     }
               }
             })
