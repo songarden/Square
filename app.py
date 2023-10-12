@@ -81,12 +81,12 @@ def show_my_ranking(user_id):
         db.users.update_one({"userid":user_id},{"$set": {"max_score_date": formatted_time}})
 
     # db에서 max_score가 0인 유저(=플레이 하지 않음)를 제외한 전체 데이터를 가져온다
-    list_user.sort(key=lambda field: (-field["max_score"], field["max_score_date"], field["username"]))
-    list_user = list(db.users.find({"max_score": {"$ne": 0}}))
 
+    list_user = list(db.users.find({"max_score": {"$ne": 0}}))
+    
     # db의 유저를 max_score 내림차순으로 정렬하고, 상위 10명만 남긴다
     # max_score가 같을 경우 max_score_date 오름차순, 그래도 같으면 유저이름 순으로 정렬한다. 유저 이름은 중복되지 않기 때문에 여기까지만 하면 될거같음.
-
+    list_user.sort(key=lambda field: (-field["max_score"], field["max_score_date"], field["username"]))
     list_user = list_user[:10]
 
     # 순위를 계산하여 각 유저 데이터에 추가
