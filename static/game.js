@@ -3,10 +3,8 @@ const GameState = {
     INIT: "init",
     PLAY: "play",
     REJECT: "reject",
-    MOUSE_OUT: "out",
     PAUSE: "pause",
     STOP: "stop",
-    READY: "ready",
     ALERT: "alert"
 }
 
