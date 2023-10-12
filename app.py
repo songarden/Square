@@ -56,7 +56,7 @@ user_list = [
 # 현재 db를 비우고 가데이터를 넣는다
 db.users.delete_many({})
 db.users.insert_many(user_list)
-
+db.achievement.delete_many({})
 #token 확인 데코레이터 선언 함수입니다.
 def requires_jwt(func):
     @wraps(func)
@@ -295,15 +295,19 @@ def send_result(user_id):
 def process_achievement(user_id):
     data = request.get_json()
     scores = data['scores']
-
+    
     # 업적 로직 하드코딩
     # 점수 100점
-    if max(scores) > 100:
-        return make_achievement_response("100점!", "100점 달성하기"), 200
+    if max(scores) >= 100:
+        if db.achievement.find_one({"achievementid": "2", "userid": user_id}) == None:
+            db.achievement.insert_one({"achievementid": "2", "userid": user_id, "date": datetime.now()})
+            return make_achievement_response("100점!", "100점 달성하기"), 200
 
     #점수 50점 미만
     if min(scores) < 50:
-        return make_achievement_response("50점?", "50점 미만 달성하기"), 200
+        if db.achievement.find_one({"achievementid": "3", "userid": user_id}) == None:
+            db.achievement.insert_one({"achievementid": "3", "userid": user_id, "date": datetime.now()})
+            return make_achievement_response("일부로 그러신거죠?", "50점 미만 달성하기"), 200
     
     return jsonify({"error": "달성할 업적이 없습니다."}), 400
     
