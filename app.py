@@ -1,3 +1,4 @@
+from functools import wraps
 from flask import Flask, render_template, request, jsonify, redirect
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -51,6 +52,28 @@ user_list = [
 # 현재 db를 비우고 가데이터를 넣는다
 db.users.delete_many({})
 db.users.insert_many(user_list)
+
+#token 확인 데코레이터 입니다.
+def requires_jwt(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        token_receive = request.cookies.get('mytoken')
+        if token_receive is None:
+            print("쿠키가 없습니다.")
+            return redirect("/")
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            print(payload)
+            # 여기서 필요한 추가적인 유저 정보를 전달할 수 있습니다
+            request.current_user = payload
+        except jwt.ExpiredSignatureError:
+            print("쿠키가 만료되었습니다.")
+            return redirect("/")
+        except jwt.exceptions.DecodeError:
+            print("쿠키 디코딩에 실패하였습니다.")
+            return redirect("/")
+        return func(*args, **kwargs)
+    return decorated_function
 
 # API # : 랭킹 보여주기
 @app.route("/ranking")
@@ -173,23 +196,12 @@ def login_proc():
     # 아이디, 비밀번호가 일치하지 않는 경우
     else:
         return jsonify({'result': 'fail'})
-    
+
 @app.route('/login', methods=["GET"])
+@requires_jwt
 def home2():
-    token_receive = request.cookies.get('mytoken')
-    if token_receive is None:
-        print("쿠키가 없습니다.")
-        return redirect("/")
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        print(payload)
-        return render_template('login.html',max_score = payload['max_score'])
-    except jwt.ExpiredSignatureError:
-        print("쿠키가 없습니다1")
-        return redirect("/")
-    except jwt.exceptions.DecodeError:
-        print("쿠키가 없습니다2")
-        return redirect("/")
+    print(request.current_user)
+    return render_template('login.html',max_score = request.current_user.get('max_score',0))
 
 @app.route('/game')
 def game():
@@ -210,5 +222,7 @@ def send_result():
     
     print(sum)
     return jsonify({"result": "success"}), 200
+
+
 
 app.run("0.0.0.0", port=5020, threaded=True, debug=True)

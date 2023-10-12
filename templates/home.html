@@ -16,11 +16,8 @@
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <link rel="stylesheet" href="{{url_for('static', filename='home.css')}}">
     <style>
-        #logo{
-            font-family: 'Pacifico', cursive;
-            font-size:20px;
-        }
         *{
             font-family: 'Roboto', sans-serif;  
         }
@@ -49,8 +46,9 @@
         .input-container {
             display: flex;
             flex-direction: column;
-            max-width: 300px;
+            /* max-width: 300px; */
             margin: 0 auto;
+            background-color: white;
         }
 
         .input-password .input-id {
@@ -78,6 +76,10 @@
         }
         footer{
             font-size: 3px;
+        }
+        #input-form{
+            text-emphasis-color : aqua;
+            text-decoration-color: purple;
         }
     </style>
     </script>
@@ -117,16 +119,21 @@
         <h3 id="logo">Square</h3>
     </div>
     <div id="post-box" class="input-container">
-        <div class="form-group">
-            <label for="login-id" style="margin:0 34px 0 34px">ID</label>
-            <input id="login-id" class="input-id" placeholder="ID">
+        <div id=""input-form">
+            <div class="form-group">
+                <label for="login-id" style="margin:0 34px 0 34px">ID</label>
+                <input id="login-id" class="input-id" placeholder="ID">
+            </div>
+            <div class="form-group">
+                <label for="login-password">PASSWORD</label>
+                <input id="login-password" class="input-password" placeholder="PASSWORD"></input>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="login-password">PASSWORD</label>
-            <input id="login-password" class="input-password" placeholder="PASSWORD"></input>
+        <div id="button-form">
+            <button type="button" class="myButton" onclick="JoinClick()">회원가입</button>
+            <button type="button" class="myButton" onclick="loginClick()">로그인</button>
         </div>
-        <button type="button" class="myButton" onclick="JoinClick()">회원가입</button>
-        <button type="button" class="myButton" onclick="loginClick()">로그인</button>
+        
         
         
         
