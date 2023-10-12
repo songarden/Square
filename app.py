@@ -299,19 +299,23 @@ def process_achievement(user_id):
     # 업적 로직 하드코딩
     # 점수 100점
     if max(scores) >= 100:
-        if db.achievement.find_one({"achievementid": "2", "userid": user_id}) == None:
-            db.achievement.insert_one({"achievementid": "2", "userid": user_id, "date": datetime.now()})
+        if check_and_achieve("2", user_id):
             return make_achievement_response("100점!", "100점 달성하기"), 200
 
     #점수 50점 미만
     if min(scores) < 50:
-        if db.achievement.find_one({"achievementid": "3", "userid": user_id}) == None:
-            db.achievement.insert_one({"achievementid": "3", "userid": user_id, "date": datetime.now()})
+        if check_and_achieve("2", user_id):
             return make_achievement_response("일부로 그러신거죠?", "50점 미만 달성하기"), 200
     
     return jsonify({"error": "달성할 업적이 없습니다."}), 400
     
 def make_achievement_response(title, body):
     return jsonify({"title": title, "body": body})
+
+def check_and_achieve(achievement_id, user_id):
+    if db.achievement.find_one({"achievementid": achievement_id, "userid": user_id}) == None:
+        db.achievement.insert_one({"achievementid": achievement_id, "userid": user_id, "date": datetime.now()})
+        return True
+    return False
 
 app.run("0.0.0.0", port=5020, threaded=True, debug=True)
