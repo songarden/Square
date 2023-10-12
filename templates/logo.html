@@ -1,19 +1,63 @@
 <!DOCTYPE html>
 <html lang="ko">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- 글꼴 링크 -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap">
-        <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&family=Roboto:wght@100;400&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="{{url_for('static', filename='home.css')}}">
-    </head>
-    <body>
-        <div id="header">
-            <a id="logo" href="/">Square</a>
-        </div>
-    </body>
-    
-</html>
 
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 글꼴 링크 -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&family=Roboto:wght@100;400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{url_for('static', filename='home.css')}}">
+    {# 아이콘 삽입을 위한 폰트 어썸 #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div id="header">
+        <a id="logo" href="/">Square</a>
+        <i class="fa fa-question-circle" aria-hidden="true" id="popupButton" 
+        style="font-size:30px; color:orange; cursor:pointer;"></i>
+        <div id="popup" class="popup-content" style="border-color:orange;">
+            <span id="closeButton" class="close" style="font-size:40px;">&times;</span>
+            <h2>About Square</h2>
+            <p>정확히 정사각형을 그리는 것이 목표인 게임입니다!</p>
+            <br>
+            <h3>Rules</h3>
+            <p>화면을 터치하면 3초의 짧은 시간이 주어집니다. 주어진 시간안에 사각형을 완성하세요.</p>
+            <p>사각형이 완벽할수록 점수는 100점에 가까워집니다.</p>
+            <p>사각형 그리기를 3번 반복하고, 합산한 점수가 최종 점수로 인정됩니다.</p>
+            <br>
+            <h3>Comment</h3>
+            <p>세상에서 가장 사각형을 잘 그리는 사람이 되어보세요!</p>
+            <p>몇가지 업적들을 숨겨 두었습니다. 숨겨진 업적들을 찾아보세요!</p>
+        </div>
+    </div>
+</body>
+<script>
+    // 버튼과 팝업 요소 가져오기
+    var popupButton = document.getElementById("popupButton");
+    var popup = document.getElementById("popup");
+    var closeButton = document.getElementById("closeButton");
+
+    // 팝업 열기
+    popupButton.onclick = function () {
+        popup.style.display = "block";
+    }
+
+    // 팝업 닫기
+    closeButton.onclick = function () {
+        popup.style.display = "none";
+    }
+
+    // 팝업 외의 영역을 클릭하면 팝업 닫기 (선택 사항)
+    window.onclick = function (event) {
+        if (event.target === popup) {
+            popup.style.display = "none";
+        }
+    }
+
+</script>
+
+</html>

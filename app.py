@@ -120,24 +120,26 @@ def signup_process():
         if not re.match(pattern, userid):
             errors["useridError"] = "id는 영문 및 숫자로 구성되어야 합니다"
         
-        # 유저 id가 너무 짧으면 에러 메세지를 반환한다
-        if len(userid) <= 3:
-            errors["useridError"] = "id가 너무 짧습니다"
+
+        # 유저 id의 길이가 적절하지 않으면 에러 메세지를 반환한다
+        if not (4 <= len(userid) <= 20):
+            errors["useridError"] = "아이디의 길이가 적절하지 않습니다"
+
 
         # 유저 id에 공백이 있으면 에러 메세지를 반환한다
         if ' ' in userid:
-            errors["useridError"] = "id에는 공백이 없어야 합니다"
+            errors["useridError"] = "아이디에는 공백이 없어야 합니다"
         
-        # 유저 이름이 너무 짧으면 에러 메세지를 반환한다
-        if len(username) <= 1:
-            errors["usernameError"] = "이름이 너무 짧습니다"
+        # 유저 이름의 길이가 적절하지 않으면 에러 메세지를 반환한다
+        if not (2 <= len(username) <= 10):
+            errors["usernameError"] = "이름의 길이가 적절하지 않습니다"
 
         # 유저 이름에 공백이 있으면 에러 메세지를 반환한다
         if ' ' in username:
             errors["usernameError"] = "이름에는 공백이 없어야 합니다"
         
         # 패스워드가 너무 짧으면 에러 메세지를 반환한다
-        if len(password) <= 4:
+        if len(password) <= 3:
             errors["passwordconfirmError"] = "패스워드가 너무 짧습니다"
 
         # 패스워드가 일치하지 않으면 에러 메세지를 반환한다
