@@ -22,6 +22,7 @@ class GameContext {
     _scores = [];
     _remainingTime = 3000;
     _message = "";
+
     constructor() { }
 
     gameStart(callback) {
@@ -29,8 +30,7 @@ class GameContext {
         let intervalId = setInterval(() => {
             if (this._remainingTime - 10 > 0) {
                 this._remainingTime -= 10;
-            }
-            else {
+            } else {
                 clearInterval(intervalId);
                 callback();
                 return;
@@ -74,7 +74,7 @@ class GameContext {
             this.state = GameState.INIT;
             console.log(this._scores);
             this._remainingTime = 3000;
-            return GameEndResult.SUCCESS;  
+            return GameEndResult.SUCCESS;
         } else {
             this.showMessage("다시 시도 해주세요.", 1000, () => {
                 this.state = GameState.INIT;
@@ -83,7 +83,7 @@ class GameContext {
             return GameEndResult.FAILURE;
         }
     }
-    
+
     /**
      * 게임을 중단합니다.
      */
@@ -143,7 +143,7 @@ class Game {
     endY = -1;
     maxGame = 3;
     drag = false;
-    setting = (context) => {};
+    setting = (context) => { };
 
     constructor(rule, calc, canvas, setting, maxGame) {
         this.rule = rule;
@@ -181,7 +181,7 @@ class Game {
             if (this.gameContext._scores.length === this.maxGame) {
                 // TODO: 랭킹 화면으로 리다이렉트
                 this.gameContext.gameStop();
-                const sendResult = async() => {
+                const sendResult = async () => {
                     let result = await sendResultData("/sendResult", this.gameContext._scores);
                     if (result) {
                         console.log("서버에 점수를 보냈습니다.");
@@ -275,7 +275,7 @@ function drawScene(game) {
             if (game.startX === -1 || game.startY === -1 || game.endX === -1 || game.endY === -1) {
                 break;
             }
-            context.strokeRect(game.startX, game.startY, game.endX - game.startX, game.endY - game.startY); 
+            context.strokeRect(game.startX, game.startY, game.endX - game.startX, game.endY - game.startY);
             break;
         case GameState.STOP:
             context.clearRect(0, 0, context.canvas.width, context.canvas.height);
@@ -298,10 +298,10 @@ function render(game) {
         console.error("Failed to render context.");
         return;
     }
-    
+
     drawScene(game);
     drawProgress(game);
-    
+
     window.requestAnimationFrame(() => render(game));
 }
 
@@ -323,7 +323,7 @@ function drawProgress(game) {
         context.fillStyle = color;
         context.fill();
         context.closePath();
-        
+
         if (game.setting) {
             game.setting(context);
         }
@@ -356,7 +356,7 @@ function drawProgress(game) {
 
     if (!canvasX) {
         return;
-    } 
+    }
 
     let x = canvasX - game.maxGame * (dx);
     for (let i = game.maxGame - 1; i >= 0; i--) {
@@ -375,12 +375,12 @@ function drawProgress(game) {
 
 function start() {
     let canvas = document.getElementById("canvas");
-    const rule = function(x1, y1, x2, y2) {
+    const rule = function (x1, y1, x2, y2) {
         let dist = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
         return dist > 100;
     }
 
-    const calc = function(x1, y1, x2, y2) {
+    const calc = function (x1, y1, x2, y2) {
         let lengthX = Math.abs(x2 - x1);
         let lengthY = Math.abs(y2 - y1);
         let score = Math.min(lengthX / lengthY, lengthY / lengthX) * 100;
@@ -391,7 +391,7 @@ function start() {
     /**
      * @param {CanvasRenderingContext2D} context 
      */
-    const setting = function(context) {
+    const setting = function (context) {
         context.lineWidth = 3;
         context.strokeStyle = "#000000";
         context.fillStyle = "#000000";
@@ -415,7 +415,7 @@ function start() {
  * 
  */
 async function sendResultData(url, scores) {
-    let requestData = JSON.stringify({scores: scores});
+    let requestData = JSON.stringify({ scores: scores });
     let result = await fetch(url, {
         method: "POST",
         headers: {
