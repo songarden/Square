@@ -266,11 +266,9 @@ function drawScene(game) {
     const centerY = context.canvas.height / 2;
     switch (game.gameContext.state) {
         case GameState.INIT:
-            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
             context.fillText("START", centerX, centerY);
             break;
         case GameState.PLAY:
-            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
             context.fillText(`${game.gameContext._remainingTime / 10}`, centerX, centerY);
             if (game.startX === -1 || game.startY === -1 || game.endX === -1 || game.endY === -1) {
                 break;
@@ -278,11 +276,9 @@ function drawScene(game) {
             context.strokeRect(game.startX, game.startY, game.endX - game.startX, game.endY - game.startY);
             break;
         case GameState.STOP:
-            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
             context.fillText("STOP", centerX, centerY);
             break;
         case GameState.ALERT:
-            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
             context.fillText(`${game.gameContext._message}`, centerX, centerY);
             break;
     }
@@ -299,10 +295,19 @@ function render(game) {
         return;
     }
 
+    clearCanvas(context);
     drawScene(game);
     drawProgress(game);
 
     window.requestAnimationFrame(() => render(game));
+}
+
+/**
+ * 현 컨텍스트를 지웁니다.
+ * @param {CanvasRenderingContext2D} context 
+ */
+function clearCanvas(context) {
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 }
 
 /**
