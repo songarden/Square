@@ -10,14 +10,12 @@
     font-family: 'Roboto', sans-serif;  
 }
 
-html, body {
-    /* html과 body 요소에 높이를 100%로 설정하여 그라데이션이 전체 배경으로 표시됨 */
-    height: 100%;
-}
+
 body{
     /* 선형 그라데이션을 적용하여 배경 만들기 */
     background: linear-gradient(to bottom right, #060606, #7d7e7d);
-
+    background-size: cover;
+    background-attachment: fixed;
     /* 추가적인 스타일링을 원하는 경우 아래에 추가 코드 작성 가능 */
     /* 예: 글자 색상, 폰트, 여백, 텍스트 정렬 등 */
     color: white;

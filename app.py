@@ -6,6 +6,7 @@ import jwt
 import os
 from datetime import date, datetime, timedelta
 import re
+from passlib.hash import pbkdf2_sha256
 
 app = Flask(__name__)
 app.jinja_env.trim_blocks = True
@@ -101,7 +102,7 @@ def show_my_ranking(user_id):
         rank += 1
 
     # 정렬된 유저 데이터를 적절히 가공해서 출력한다
-    return render_template("myranking.j2", list_user=list_user, user_id=user_id, new_record=new_record, max_score=max_score_user, prev_score=prev_score_user, current_user_id=request.current_user.get('id'))
+    return render_template("myranking.j2", list_user=list_user, user_id=user_id, new_record=new_record, max_score=max_score_user, prev_score=prev_score_user, current_user_name=request.current_user.get('name'))
 
 # API # : 회원 가입 페이지 보여주기
 @app.route("/signup")
@@ -167,6 +168,8 @@ def signup_process():
             return jsonify(errors)
 
         # 검증을 통과하면 db에 유저 정보를 저장한다.
+        salt = SECRET_KEY
+        password =  pbkdf2_sha256.hash(password + salt)
         user_new = {
             "userid": userid,
             "username": username,
@@ -205,11 +208,15 @@ def login_proc():
     input_data = request.get_json()
     user_id = input_data['id']
     user_pw = input_data['pw']
+    salt = SECRET_KEY
+
     user = db.users.find_one({'userid': user_id })
+
+    check = pbkdf2_sha256.verify(user_pw+salt , user['password'])
     if user is None :
         return jsonify({'result':'fail'})
     
-    if user_pw == user['password'] :
+    if check :
         payload = {
             'id': user['userid'],
             'name': user['username'],
@@ -233,7 +240,7 @@ def home2():
 @app.route('/game/<string:user_id>')
 @requires_jwt
 def game(user_id):
-    return render_template('game.html',current_user_id = request.current_user.get('id'))
+    return render_template('game.html',current_user_name = request.current_user.get('name'))
 
 @app.route("/send_result/<string:user_id>", methods=['POST'])
 @requires_jwt
