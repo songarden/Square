@@ -196,7 +196,7 @@ class Game {
                     let result = await sendResultData(`/send_result/${currentUser}`, scores);
                     if (result) {
                         console.log("서버에 점수를 보냈습니다.");
-                        window.location.href = `/ranking/${currentUser}`;
+                        setTimeout(()=>{window.location.href = `/ranking/${currentUser}`}, 2000);
                     } else {
                         alert("결과를 서버에 전송하는데 실패하였습니다.");
                         window.location.href = "/";
