@@ -197,10 +197,11 @@ def login_proc():
 
     user = db.users.find_one({'userid': user_id })
 
-    check = pbkdf2_sha256.verify(user_pw+salt , user['password'])
+    
     if user is None :
         return jsonify({'result':'fail'})
     
+    check = pbkdf2_sha256.verify(user_pw+salt , user['password'])
     if check :
         payload = {
             'id': user['userid'],
