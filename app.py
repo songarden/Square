@@ -18,44 +18,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ADMIN_ID = os.getenv("ADMIN_ID")
 ADMIN_PW = os.getenv("ADMIN_PW")
 
-# db에 넣을 가데이터 나중에 제거해줘야함
-user_list = [
-    {
-        "userid": "123",
-        "username": "john_doe",
-        "password": "123",
-        "prev_score" : 0,
-        "max_score": 98.77,
-        "max_score_date": "2023-10-12 16:18:45",
-    },
-    {
-        "userid": "456",
-        "username": "jane_smith",
-        "password": "123",
-        "prev_score" : 0,
-        "max_score": 95.44,
-        "max_score_date": "2023-10-12 16:18:40",
-    },
-    {
-        "userid": "789",
-        "username": "alice_wonderland",
-        "password": "123",
-        "prev_score": 0,
-        "max_score": 90.22,
-        "max_score_date": "2023-10-12 16:18:41",
-    },
-    {
-        "userid": "101112",
-        "username": "ghibli",
-        "password": "pass123",
-        "prev_score": 0,
-        "max_score": 10.11,
-        "max_score_date": "2023-10-12 16:18:42",
-    },
-]
-# 현재 db를 비우고 가데이터를 넣는다
-db.users.delete_many({})
-db.users.insert_many(user_list)
+
 
 #token 확인 데코레이터 선언 함수입니다.
 def requires_jwt(func):
@@ -127,7 +90,8 @@ def show_my_ranking(user_id):
     list_user = list(db.users.find({"max_score": {"$ne": 0}}))
 
     # db의 유저를 max_score 내림차순으로 정렬하고, 상위 10명만 남긴다
-    list_user.sort(key=lambda field: field["max_score"], reverse=True)
+    # max_score가 같을 경우 max_score_date 오름차순, 그래도 같으면 유저이름 순으로 정렬한다. 유저 이름은 중복되지 않기 때문에 여기까지만 하면 될거같음.
+    list_user.sort(key=lambda field: (-field["max_score"], field["max_score_date"], field["username"]))
     list_user = list_user[:10]
 
     # 순위를 계산하여 각 유저 데이터에 추가
