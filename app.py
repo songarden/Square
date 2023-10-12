@@ -204,10 +204,12 @@ def home2():
     return render_template('login.html',max_score = request.current_user.get('max_score',0))
 
 @app.route('/game/<string:user_id>')
+@requires_jwt
 def game(user_id):
     return render_template('game.html')
 
 @app.route("/send_result/<string:user_id>", methods=['POST'])
+@requires_jwt
 def send_result(user_id):
     data = request.get_json()
     scores = data['scores']
