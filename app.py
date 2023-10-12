@@ -26,7 +26,7 @@ user_list = [
         "password": "123",
         "prev_score" : 0,
         "max_score": 98.77,
-        "max_score_date": "23/10/13",
+        "max_score_date": "2023-10-12 16:18:45",
     },
     {
         "userid": "456",
@@ -34,7 +34,7 @@ user_list = [
         "password": "123",
         "prev_score" : 0,
         "max_score": 95.44,
-        "max_score_date": "23/10/12",
+        "max_score_date": "2023-10-12 16:18:40",
     },
     {
         "userid": "789",
@@ -42,15 +42,15 @@ user_list = [
         "password": "123",
         "prev_score": 0,
         "max_score": 90.22,
-        "max_score_date": "23/10/10",
+        "max_score_date": "2023-10-12 16:18:41",
     },
     {
         "userid": "101112",
         "username": "ghibli",
         "password": "pass123",
         "prev_score": 0,
-        "max_score": 0,
-        "max_score_date": "23/10/10",
+        "max_score": 10.11,
+        "max_score_date": "2023-10-12 16:18:42",
     },
 ]
 # 현재 db를 비우고 가데이터를 넣는다
@@ -100,6 +100,44 @@ def show_rankings():
     # 정렬된 유저 데이터를 적절히 가공해서 출력한다
     return render_template("ranking.j2", list_user=list_user)
 
+ # API # : 게임 끝난 후 나의 랭킹 보여주기
+@app.route("/ranking/<string:user_id>")
+def show_my_ranking(user_id):
+    # 이전 점수와 비교하여 신기록을 달성한 경우 max_score를 갱신한다
+    prev_score_cursor = db.users.find({"userid":user_id}, { "prev_score": 1})
+    for d in prev_score_cursor:
+        # 로우데이터인 점수를 소수점 둘째짜리까지 반올림 하는 과정을 추가한다
+        prev_score_user = round(d.get("prev_score"), 2)
+    max_score_cursor = db.users.find({"userid":user_id}, { "max_score": 1})
+    for d in max_score_cursor:
+        max_score_user = d.get("max_score")
+
+    new_record = False    
+    if prev_score_user > max_score_user:
+        # 나중에 모덜을 띄우기 위한 bool
+        new_record = True
+        # max score를 prev_score_user로 갱신한다
+        db.users.update_one({"userid":user_id},{"$set": {"max_score": prev_score_user}})
+        # max score date를 갱신한다
+        current_time = datetime.now()
+        formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        db.users.update_one({"userid":user_id},{"$set": {"max_score_date": formatted_time}})
+
+    # db에서 max_score가 0인 유저(=플레이 하지 않음)를 제외한 전체 데이터를 가져온다
+    list_user = list(db.users.find({"max_score": {"$ne": 0}}))
+
+    # db의 유저를 max_score 내림차순으로 정렬하고, 상위 10명만 남긴다
+    list_user.sort(key=lambda field: field["max_score"], reverse=True)
+    list_user = list_user[:10]
+
+    # 순위를 계산하여 각 유저 데이터에 추가
+    rank = 1
+    for user in list_user:
+        user['rank'] = rank
+        rank += 1
+
+    # 정렬된 유저 데이터를 적절히 가공해서 출력한다
+    return render_template("myranking.j2", list_user=list_user, user_id=user_id, new_record=new_record, max_score=max_score_user, prev_score=prev_score_user)
 
 # API # : 회원 가입 페이지 보여주기
 @app.route("/signup")
