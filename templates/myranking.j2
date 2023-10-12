@@ -27,13 +27,12 @@
         }
 
         #ranking-box {
-            margin : auto;
+            margin: 0 auto;
             margin-top: 50px;
-            width: 700px;
+            width: 650px;
             background-color: #EEEFF1;
             border-radius: 5px;
             text-align: center;
-            padding: auto;
             color: black;
         }
 
@@ -45,17 +44,17 @@
 
         #th-name,
         #td-name {
-            width: 40%
+            width: 30%
         }
 
         #th-score,
         #td-score {
-            width: 10%
+            width: 25%
         }
 
         #th-date,
         #td-date {
-            width: 70%
+            width: 30%
         }
 
         .rank-table {
@@ -67,10 +66,10 @@
             height: auto;
             border: 2px solid #333;
             border-radius: 10px;
-            background-color: #fff;
+            background-color: #c79393;
             opacity: 0.9;
             position: absolute;
-            top: 50%;
+            top: 23%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
@@ -81,17 +80,31 @@
             justify-content: center;
             align-items: center;
             color: black;
-            background-color: white;
         }
-        #score_box{
-            background-color : white;
-            color : black;
-            width : 300px;
-            height : auto;
-            padding : 5px 5px;
-            margin : 50px auto;
-            border-radius : 10px;
-            text-align : center;
+
+        #score_box {
+            background-color: white;
+            color: black;
+            width: 300px;
+            height: auto;
+            padding: 5px 5px;
+            margin: 50px auto;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .my_button {
+            width: 150px;
+            height: 50px;
+            font-size: 15px;
+            background-color: rgb(54, 53, 53);
+            color: white;
+            border-radius: 5px;
+            margin-bottom: 5%;
+        }
+
+        .my_button:hover {
+            background-color: grey;
         }
     </style>
     <script>
@@ -115,23 +128,24 @@
 <body>
     {% include 'logo.html' %}
     {# new_record 여부에 따라 모달을 띄운다 #}
-    {% if new_record %}
+    {% if True %}
     <div id="my_modal" class="modal" style="display: block;">
         <div class="modal_content">
-            <p>새로운 최고 점수 달성!</p>
+            <br>
+            <div>기존 최고 점수를 갱신했습니다!</div>
             <br>
             <span class="close" onclick="closeModal()">확인</span>
         </div>
     </div>
     {% endif %}
-    <div id = "score_box">
+    <div id="score_box">
         나의 이번 점수 : {{prev_score}}
         <br>
-        나의 최고 점수 : {{max_score}}
+        기존 최고 점수 : {{max_score}}
     </div>
     <div id="ranking-box">
-        <h1>Ranking</h1>
-        <div style="color:black; margin-bottom:10%;">랭킹은 최대 10명까지 제공됩니다</div>
+        <h1 style=>Ranking</h1>
+        <div style="color:black; margin-bottom:10%;">랭킹은 상위 10명까지 제공됩니다</div>
         <table class="rank-table">
             <tr>
                 <th id="th-my"></th>
@@ -160,7 +174,7 @@
             </tr>
             {% endfor %}
         </table>
-        <a href="/"><button class="myButton">다시하기</button></a>
+        <a href="/"><button class="my_button">다시하기</button></a>
     </div>
 
 </body>
