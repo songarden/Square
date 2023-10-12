@@ -68,6 +68,9 @@ def requires_jwt(func):
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             print(payload)
+
+            if payload['id'] != kwargs['user_id'] :
+                return redirect("/")
             # 여기서 필요한 추가적인 유저 정보를 전달할 수 있습니다
             request.current_user = payload
         except jwt.ExpiredSignatureError:
@@ -173,9 +176,25 @@ def signup_process():
         # # 성공하면 메인 페이지로 돌아간다
         return jsonify({"success":"회원 가입이 완료되었습니다!"})
 
+
 @app.route('/')
 def index():
-    return render_template('home.html')
+    token_receive = request.cookies.get('mytoken')
+    if token_receive is None:
+        return render_template("home.html")
+    else :
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            print(payload)
+            return redirect('/game/' + payload['id'])
+        except jwt.ExpiredSignatureError:
+            print("쿠키가 만료되었습니다.")
+            return render_template("home.html")
+        except jwt.exceptions.DecodeError:
+            print("쿠키 디코딩에 실패하였습니다.")
+            return render_template("home.html")
+        
+    
 
 @app.route("/login", methods=['POST'])
 def login_proc():
