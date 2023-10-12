@@ -44,21 +44,7 @@
             font-size: 16px;
         }
 
-        .myButton {
-            background-color: #050606;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: background-color 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .myButton:hover {
-            background-color: #848586;
-        }
+        
         footer{
             font-size: 3px;
         }
@@ -86,7 +72,7 @@
                   console.log((access_token))
                    if (response['result'] == 'success') {
                         $.cookie('mytoken', response['token'], {path: '/'});
-                        window.location.replace("/login")
+                        window.location.replace(`/game/${id}`);
                     } else {
                         alert(response['msg'])
                     }
@@ -102,9 +88,7 @@
     <title>test</title>
 </head>
 <body>
-    <div id="header">
-        <h3 id="logo">Square</h3>
-    </div>
+    {% include 'logo.html' %}
     <div id="post-box" class="input-container">
         <div id="input-form">
             <div class="form-group">
@@ -113,7 +97,7 @@
             </div>
             <div class="form-group">
                 <label for="login-password">PASSWORD</label>
-                <input id="login-password" class="input-password" placeholder="PASSWORD"></input>
+                <input type="password" id="login-password" class="input-password" placeholder="PASSWORD"></input>
             </div>
         </div>
         <div id="button-form">

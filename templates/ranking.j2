@@ -2,32 +2,81 @@
 <html>
 <head>
     <title>랭킹</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+            integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+            crossorigin="anonymous">
+
+    <!-- 글꼴 링크 -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&family=Roboto:wght@100;400&display=swap" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
     <style>
         th, td {
             text-align: center;
         }
+
+        #ranking-box{
+            margin: auto;
+            margin-top:100px;
+            width: 500px;
+            background-color: #EEEFF1;
+            border-radius: 5px;
+            text-align: center;
+            padding: 20px;
+            color:black;
+        }
+
+        #th-rank, #td-rank{
+            width:10%
+        }
+
+        #th-name, #td-name{
+            width:50%
+        }
+
+        #th-score, #td-score{
+            width:30%
+        }
+
+        #th-date, #td-date{
+            width:30%
+        }
+
+        .rank-table{
+            margin-bottom:10%
+        }
+
     </style>
 </head>
 <body>
-    <h1>랭킹</h1>
-    <table>
-        <tr>
-            <th>순위</th>
-            <th>이름</th>
-            <th>최고점수</th>
-            <th>날짜</th>
-        </tr>
-        {# 전체 유저의 정보를 출력한다#}
-        {% for user in list_user %}
-        <tr>
-        {# 내 정보라면 하이라이트 처리를 해야한다#}
-            <td>{{ user.rank }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.max_score }}</td>
-            <td>{{ user.max_score_date }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <a href="/main"><button style="width: 140px; height : 50px;">다시하기</button></a>
+    {% include 'logo.html' %}
+    <div id="ranking-box">
+        <h1 style="margin-bottom:10%;">Ranking</h1>
+        <table class="rank-table">
+            <tr>
+                <th id="th-rank">순위</th>
+                <th id="th-name">이름</th>
+                <th id="th-score">최고점수</th>
+                <th id="th-date">날짜</th>
+            </tr>
+            {# 전체 유저의 정보를 출력한다#}
+            {% for user in list_user %}
+            <tr>
+            {# 내 정보라면 하이라이트 처리를 해야한다#}
+                <td id="td-rank">{{ user.rank }}</td>
+                <td id="td-name">{{ user.username }}</td>
+                <td id="td-score">{{ user.max_score }}</td>
+                <td id="td-date">{{ user.max_score_date }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <a href="/main"><button class="myButton">다시하기</button></a>
+    </div>
+    
 </body>
 </html>

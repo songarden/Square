@@ -57,7 +57,7 @@ user_list = [
 db.users.delete_many({})
 db.users.insert_many(user_list)
 
-#token 확인 데코레이터 입니다.
+#token 확인 데코레이터 선언 함수입니다.
 def requires_jwt(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):

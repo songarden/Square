@@ -23,3 +23,19 @@ body{
     padding: 20px;
     text-align: center;
 }
+
+.myButton {
+    background-color: #050606;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.myButton:hover {
+    background-color: #848586;
+}
