@@ -16,11 +16,7 @@ client = MongoClient("mongodb://test:test@54.180.100.137", 27017)
 db = client.square
 load_dotenv(dotenv_path="../.env")
 SECRET_KEY = os.getenv("SECRET_KEY")
-ADMIN_ID = os.getenv("ADMIN_ID")
-ADMIN_PW = os.getenv("ADMIN_PW")
 
-
-#token 확인 데코레이터 선언 함수입니다.
 def requires_jwt(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
@@ -30,8 +26,6 @@ def requires_jwt(func):
             return redirect("/")
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-            print(payload)
-
             if payload['id'] != kwargs['user_id'] :
                 return redirect("/")
             # 여기서 필요한 추가적인 유저 정보를 전달할 수 있습니다
@@ -45,7 +39,6 @@ def requires_jwt(func):
         return func(*args, **kwargs)
     return decorated_function
 
-# API # : 랭킹 보여주기
 @app.route("/ranking")
 def show_rankings():
     # db에서 max_score가 0인 유저(=플레이 하지 않음)를 제외한 전체 데이터를 가져온다
@@ -61,9 +54,8 @@ def show_rankings():
         rank += 1
 
     # 정렬된 유저 데이터를 적절히 가공해서 출력한다
-    return render_template("ranking.j2", list_user=list_user)
+    return render_template("ranking.html", list_user=list_user)
 
- # API # : 게임 끝난 후 나의 랭킹 보여주기
 @app.route("/ranking/<string:user_id>")
 @requires_jwt
 def show_my_ranking(user_id):
@@ -102,16 +94,13 @@ def show_my_ranking(user_id):
         rank += 1
 
     # 정렬된 유저 데이터를 적절히 가공해서 출력한다
-    return render_template("myranking.j2", list_user=list_user, user_id=user_id, new_record=new_record, max_score=max_score_user, prev_score=prev_score_user, current_user_name=request.current_user.get('name'))
+    return render_template("myranking.html", list_user=list_user, user_id=user_id, new_record=new_record, max_score=max_score_user, prev_score=prev_score_user, current_user_name=request.current_user.get('name'))
 
-# API # : 회원 가입 페이지 보여주기
 @app.route("/signup")
 def show_signup():
     # 회원가입 페이지 렌더링
-    return render_template("signup.j2")
+    return render_template("signup.html")
 
-
-# API # : 회원 가입 처리
 @app.route("/signup_process", methods=["POST"])
 def signup_process():
     if request.method == "POST":
@@ -181,7 +170,6 @@ def signup_process():
         # # 성공하면 메인 페이지로 돌아간다
         return jsonify({"success":"회원 가입이 완료되었습니다!"})
 
-
 @app.route('/')
 def index():
     token_receive = request.cookies.get('mytoken')
@@ -198,12 +186,9 @@ def index():
         except jwt.exceptions.DecodeError:
             print("쿠키 디코딩에 실패하였습니다.")
             return render_template("home.html")
-        
-    
 
 @app.route("/login", methods=['POST'])
 def login_proc():
-    
     # 클라이언트로부터 요청된 값
     input_data = request.get_json()
     user_id = input_data['id']
@@ -221,7 +206,7 @@ def login_proc():
             'id': user['userid'],
             'name': user['username'],
             'max_score': user['max_score'],
-            'exp': datetime.utcnow() + timedelta(seconds=600)  # 로그인 24시간 유지
+            'exp': datetime.utcnow() + timedelta(seconds=600)
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
@@ -233,8 +218,7 @@ def login_proc():
 
 @app.route('/login', methods=["GET"])
 @requires_jwt
-def home2():
-    print(request.current_user)
+def login():
     return render_template('login.html',max_score = request.current_user.get('max_score',0))
 
 @app.route('/game/<string:user_id>')
@@ -249,7 +233,6 @@ def send_result(user_id):
     scores = data['scores']
     sum = 0
 
-    print(scores)
     if (len(scores) != 3):
         return jsonify({"result": "fail"}), 500
     

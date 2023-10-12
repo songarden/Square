@@ -27,6 +27,9 @@ class GameContext {
 
     constructor() { }
 
+    /**
+     * @param {{ (): void; (): void; }} callback 3초 후 실행할 작업
+     */
     gameStart(callback) {
         this.state = GameState.PLAY;
         let intervalId = setInterval(() => {
@@ -93,7 +96,7 @@ class GameContext {
         this.state = GameState.STOP;
     }
 
-    showMessage = (message, milliseconds, callback) => {
+    showMessage = (/** @type {string} */ message, /** @type {number | undefined} */ milliseconds, /** @type {{ (): void; (): void; (): void; (): void; (): void; }} */ callback) => {
         let prevState = this.state;
         this.state = GameState.ALERT;
 
@@ -145,8 +148,15 @@ class Game {
     endY = -1;
     maxGame = 3;
     drag = false;
-    setting = (context) => { };
+    setting = (/** @type {CanvasRenderingContext2D} */ context) => { };
 
+    /**
+     * @param {((x1: number, y1: number, x2: number, y2: number) => boolean) | undefined} rule
+     * @param {((x1: number, y1: number, x2: number, y2: number) => number) | undefined} calc
+     * @param {HTMLCanvasElement | null} canvas
+     * @param {{ (context: CanvasRenderingContext2D): void; (arg0: CanvasRenderingContext2D): void; }} setting
+     * @param {number | undefined} [maxGame]
+     */
     constructor(rule, calc, canvas, setting, maxGame) {
         this.rule = rule;
         this.calc = calc;
@@ -166,7 +176,7 @@ class Game {
         }
     }
 
-    mouseUp = (e) => {
+    mouseUp = (/** @type {MouseEvent} */ e) => {
         this.drag = false;
         if (this.gameContext.state == GameState.PLAY) {
             if (this.startX === -1 || this.startY === -1 || this.endX === -1 || this.endY === -1) {
@@ -217,7 +227,7 @@ class Game {
         return;
     }
 
-    mouseMove = (e) => {
+    mouseMove = (/** @type {MouseEvent} */ e) => {
         if (!this.drag) {
             return;
         }
@@ -231,7 +241,7 @@ class Game {
         console.error(`mouseMove:${this.gameContext.state}`);
     }
 
-    mouseDown = (e) => {
+    mouseDown = (/** @type {MouseEvent} */ e) => {
         if (this.gameContext.state === GameState.INIT || this.gameContext.state === GameState.REJECT) {
             this.startX = e.offsetX;
             this.startY = e.offsetY;
@@ -247,7 +257,7 @@ class Game {
         console.error(`mouseDown:${this.gameContext.state}`);
     }
 
-    mouseOut = (e) => {
+    mouseOut = (/** @type {MouseEvent} */ e) => {
         console.log(`mouseOut`);
     }
 
@@ -329,6 +339,12 @@ function drawProgress(game) {
     let scores = game.gameContext.scores;
     let context = game.renderingContext;
 
+    /**
+     * @param {number} x
+     * @param {number} y
+     * @param {number} radius
+     * @param {string | CanvasGradient | CanvasPattern} color
+     */
     function drawCircle(x, y, radius, color) {
         if (!context) {
             return;
@@ -345,6 +361,12 @@ function drawProgress(game) {
         }
     }
 
+    /**
+     * @param {number} x
+     * @param {number} y
+     * @param {string} text
+     * @param {string | CanvasGradient | CanvasPattern} color
+     */
     function drawScore(x, y, text, color) {
         if (!context) {
             return;
@@ -359,6 +381,14 @@ function drawProgress(game) {
         }
     }
 
+    /**
+     * @param {number} x
+     * @param {number} y
+     * @param {number} radius
+     * @param {string} text
+     * @param {string} circleColor
+     * @param {string} fontColor
+     */
     function drawCircleWithText(x, y, radius, text, circleColor, fontColor) {
         drawCircle(x, y, radius, circleColor);
         drawScore(x, y, text, fontColor);
@@ -391,12 +421,12 @@ function drawProgress(game) {
 
 export function start() {
     let canvas = document.getElementById("canvas");
-    const rule = function (x1, y1, x2, y2) {
+    const rule = function (/** @type {number} */ x1, /** @type {number} */ y1, /** @type {number} */ x2, /** @type {number} */ y2) {
         let dist = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
         return dist > 100;
     }
 
-    const calc = function (x1, y1, x2, y2) {
+    const calc = function (/** @type {number} */ x1, /** @type {number} */ y1, /** @type {number} */ x2, /** @type {number} */ y2) {
         let lengthX = Math.abs(x2 - x1);
         let lengthY = Math.abs(y2 - y1);
         let score = Math.min(lengthX / lengthY, lengthY / lengthX) * 100;
@@ -415,6 +445,7 @@ export function start() {
         context.textAlign = "center";
     }
 
+    // @ts-ignore
     let game = new Game(rule, calc, canvas, setting);
     canvas?.addEventListener("mouseup", (e) => game.mouseUp(e), false);
     canvas?.addEventListener("mousedown", (e) => game.mouseDown(e), false);
@@ -425,7 +456,7 @@ export function start() {
 }
 
 /**
- * 서버에 결과 데이터 POST 방식으로 보냅니다.
+ * 서버에 결과 데이터를 받기 위해 득점을 POST 방식으로 보냅니다.
  * @param {string} url
  * @param {number[]} scores
  * 
@@ -444,6 +475,11 @@ async function sendResultData(url, scores) {
     return result.ok;
 }
 
+/**
+ * 서버에 업적 달성을 확인하기 위한 점수 데이터를 POST 방시으로 보냅니다.
+ * @param {string} url
+ * @param {number[]} scores
+ */
 async function sendAchievement(url, scores) {
     let requestData = JSON.stringify({ scores: scores });
     let result = await fetch(url, {
@@ -458,15 +494,15 @@ async function sendAchievement(url, scores) {
     return await result.json();
 }
 
-const notify = (title, body) => {
+const notify = (/** @type {string} */ title, /** @type {string} */ body) => {
     StartToastifyInstance({
         text: `업적 달성\n${title}\n ${body}`,
         duration: 3000,
         newWindow: true,
         close: true,
-        gravity: "top", // `top` or `bottom`
-        position: "right", // `left`, `center` or `right`
-        stopOnFocus: true, // Prevents dismissing of toast on hover
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
         style: {
           background: "linear-gradient(to right, #00b09b, #96c93d)",
         },
