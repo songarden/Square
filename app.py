@@ -160,10 +160,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ADMIN_ID = os.getenv("ADMIN_ID")
 ADMIN_PW = os.getenv("ADMIN_PW")
 
-
-
-
-
 @app.route('/')
 def index():
     return render_template('home.html')
@@ -219,5 +215,24 @@ def home2():
         print("쿠키가 없습니다2")
         return redirect("/")
 
+@app.route('/game')
+def game():
+    return render_template('game.html')
+
+@app.route("/sendResult", methods=['POST'])
+def sendResult():
+    data = request.get_json()
+    scores = data['scores']
+    sum = 0
+
+    print(scores)
+    if (len(scores) != 3):
+        return jsonify({"result": "fail"}), 500
+    
+    for score in scores:
+        sum += score
+    
+    print(sum)
+    return jsonify({"result": "success"}), 200
 
 app.run("0.0.0.0", port=5020, threaded=True, debug=True)
