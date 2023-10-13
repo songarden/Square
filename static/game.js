@@ -197,10 +197,13 @@ class Game {
             const currentUser = window.location.href.split("/").filter(e => e).slice(-1);
             let scores = this.gameContext.scores;
             sendAchievement(`/arch/${currentUser}`, scores).then((response) => {
-                if (!response['title'] || !response['body']) {
+                if (!response[0]['title'] || !response[0]['body']) {
                     return;
                 }
-                notify(response['title'], response['body']);
+
+                for (let achievementMessage of response) {
+                    notify(achievementMessage['title'], achievementMessage['body']);
+                }
             });
 
             if (scores.length === this.maxGame) {

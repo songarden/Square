@@ -268,40 +268,41 @@ def process_achievement(user_id):
     for i in scores:
         sum += i
     
+    new_achievement = []
     # 업적 로직 하드코딩
     # 점수 77.77점
     if 77.77 in scores:
         if check_and_achieve("1", user_id):
-            return make_achievement_response("777", "77.77점 달성하기"), 200
+            new_achievement.append(make_achievement_dictionary("777", "77.77점 달성하기"))
         
     # 점수 100점
     if max(scores) >= 100:
         if check_and_achieve("2", user_id):
-            return make_achievement_response("100점!", "100점 달성하기"), 200
+            new_achievement.append(make_achievement_dictionary("100점!", "100점 달성하기"))
 
     # 점수 50점 미만
     if min(scores) < 50:
         if check_and_achieve("3", user_id):
-            return make_achievement_response("일부로 그러신거죠?", "50점 미만 달성하기"), 200
+            new_achievement.append(make_achievement_dictionary("일부로 그러신거죠?", "50점 미만 달성하기"))
     
     # 총점 300점
     if sum == 300:
         if check_and_achieve("4", user_id):
-            return make_achievement_response("완벽 그 자체", "총점 300점 달성하기"), 200
+            new_achievement.append(make_achievement_dictionary("완벽 그 자체", "총점 300점 달성하기"))
 
     # 총점 285점 이상    
     if sum >= 285:
         if check_and_achieve("5", user_id):
-            return make_achievement_response("출발이 좋은데요?", "총점 285점 이상 달성하기"), 200
+            new_achievement.append(make_achievement_dictionary("출발이 좋은데요?", "총점 285점 이상 달성하기"))
     
     if len(scores) == 3 and sum >= 150:
         if check_and_achieve("6", user_id):
-            return make_achievement_response("반타작", "총점 150점 이상 달성하기"), 200
+            new_achievement.append(make_achievement_dictionary("반타작", "총점 150점 이상 달성하기"))
         
     # 점수 0.1점 미만
     if min(scores) < 0.1:
         if check_and_achieve("7", user_id):
-            return make_achievement_response("반항아", "0.1점 미만 달성하기"), 200
+            new_achievement.append( make_achievement_dictionary("반항아", "0.1점 미만 달성하기"))
         
     # 신호등
     condition_green = False
@@ -318,7 +319,7 @@ def process_achievement(user_id):
 
     if (condition_green and condition_orange and condition_red) :
         if check_and_achieve("8", user_id):
-            return make_achievement_response("신호등", "세가지 색상의 스코어 달성"), 200
+            new_achievement.append(make_achievement_dictionary("신호등", "세가지 색상의 스코어 달성"))
         
     # 3개의 점수가 1점 이내
     score_max = max(scores)
@@ -326,13 +327,15 @@ def process_achievement(user_id):
 
     if (score_max-score_min < 1) and len(scores) == 3:
         if check_and_achieve("9", user_id):
-            return make_achievement_response("균형의 수호자", "3개의 점수의 편차가 1점 이내"), 200
+            new_achievement.append(make_achievement_dictionary("균형의 수호자", "3개의 점수의 편차가 1점 이내"))
 
-        
+    if len(new_achievement) > 0:
+        return jsonify(new_achievement), 200
+    
     return jsonify({"error": "달성할 업적이 없습니다."}), 400
     
-def make_achievement_response(title, body):
-    return jsonify({"title": title, "body": body})
+def make_achievement_dictionary(title, body):
+    return {"title": title, "body": body}
 
 def check_and_achieve(achievement_id, user_id):
     if db.achievement.find_one({"achievementid": achievement_id, "userid": user_id}) == None:
