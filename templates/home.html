@@ -91,6 +91,11 @@
             window.location.href = "/signup"
         }
 
+        window.addEventListener("keydown", (e) => {
+            if (e.keyCode === 13) {
+                loginClick();
+            }
+        });
     </script>
     <title>test</title>
 </head>
